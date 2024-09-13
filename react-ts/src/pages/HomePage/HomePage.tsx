@@ -7,15 +7,17 @@ import {
   TableCell,
   TableBody,
   Button,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { TableData } from "../../types";
 import CreateNewOrder from "../../components/Navbar/CreateNewOrder/CreateNewOrder";
-// import MultiSelectInput from "../../components/Navbar/CreateNewOrder/CreateNewOrder";
 
 export default function HomePage() {
   const [apiData, setApiData] = useState<TableData[]>([]);
+  const [editingRowId, setEditingRowId] = useState<number | null>(null); // ID редактируемой строки
+  const [editedData, setEditedData] = useState<TableData | null>(null); // Редактируемые данные
 
   const host = "https://test.v5.pryaniky.com";
   const authToken = localStorage.getItem("token");
@@ -23,10 +25,11 @@ export default function HomePage() {
   const deleteHandler = async (id: number) => {
     try {
       const response = await axios.delete(
-        `${host}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`, {
+        `${host}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`,
+        {
           headers: {
-            "x-auth" : authToken
-          }
+            "x-auth": authToken,
+          },
         }
       );
       if (response.status === 200) {
@@ -37,9 +40,36 @@ export default function HomePage() {
     }
   };
 
+  const editHandler = (row: TableData) => {
+    setEditingRowId(row.id);
+    setEditedData(row); 
+  };
+
+  const saveHandler = async (id: number) => {
+    try {
+      const response = await axios.post(
+        `${host}/ru/data/v3/testmethods/docs/userdocs/set/${id}`,
+        editedData,
+        {
+          headers: {
+            "x-auth": authToken,
+          },
+        }
+      );
+      if (response.status === 200) {
+        // Обновляем данные
+        setApiData((prev) =>
+          prev.map((row) => (row.id === id ? { ...editedData, id } : row))
+        );
+        setEditingRowId(null); // Завершаем редактирование
+      }
+    } catch (error) {
+      console.log("Ошибка при сохранении", error);
+    }
+  };
+
   const getData = async () => {
     try {
-      console.log("eto authToken v localStorage ===> ", authToken);
       const response = await axios.get(
         `${host}/ru/data/v3/testmethods/docs/userdocs/get`,
         {
@@ -48,10 +78,6 @@ export default function HomePage() {
           },
         }
       );
-      console.log("eto response v HomePage====>", response.data);
-      // setApiData(response.data)
-      console.log(apiData);
-
       if (response.status === 200 && response.data) {
         setApiData(response.data.data);
       } else {
@@ -61,11 +87,19 @@ export default function HomePage() {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getData();
   }, []);
 
-  console.log("eto dannie dlya otobrazhenia===>", apiData);
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: keyof TableData
+  ) => {
+    if (editedData) {
+      setEditedData({ ...editedData, [field]: event.target.value });
+    }
+  };
 
   return (
     <>
@@ -81,24 +115,103 @@ export default function HomePage() {
               <TableCell>Employee Number</TableCell>
               <TableCell>Employee Sig Date</TableCell>
               <TableCell>Employee Signature Name</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {apiData.map((row) => (
               <TableRow key={row.id}>
-                <TableCell>{row.companySigDate}</TableCell>
-                <TableCell>{row.companySignatureName}</TableCell>
-                <TableCell>{row.documentName}</TableCell>
-                <TableCell>{row.documentStatus}</TableCell>
-                <TableCell>{row.documentType}</TableCell>
-                <TableCell>{row.employeeNumber}</TableCell>
-                <TableCell>{row.employeeSigDate}</TableCell>
-                <TableCell>{row.employeeSignatureName}</TableCell>
-                <TableCell>
-                  <Button onClick={() => deleteHandler(row.id)}>
-                    Удалить!
-                  </Button>
-                </TableCell>
+                {editingRowId === row.id ? (
+                  <>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.companySigDate || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                          handleInputChange(e, "companySigDate")
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.companySignatureName || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                          handleInputChange(e, "companySignatureName")
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.documentName || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange(e, "documentName")}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.documentStatus || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                          handleInputChange(e, "documentStatus")
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.documentType || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange(e, "documentType")}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.employeeNumber || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                          handleInputChange(e, "employeeNumber")
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.employeeSigDate || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                          handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, "employeeSigDate")
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedData?.employeeSignatureName || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                          handleInputChange(e, "employeeSignatureName")
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button onClick={() => saveHandler(row.id)}>
+                        Сохранить
+                      </Button>
+                      <Button onClick={() => setEditingRowId(null)}>
+                        Отмена
+                      </Button>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>{row.companySigDate}</TableCell>
+                    <TableCell>{row.companySignatureName}</TableCell>
+                    <TableCell>{row.documentName}</TableCell>
+                    <TableCell>{row.documentStatus}</TableCell>
+                    <TableCell>{row.documentType}</TableCell>
+                    <TableCell>{row.employeeNumber}</TableCell>
+                    <TableCell>{row.employeeSigDate}</TableCell>
+                    <TableCell>{row.employeeSignatureName}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => editHandler(row)}>
+                        Редактировать
+                      </Button>
+                      <Button onClick={() => deleteHandler(row.id)}>
+                        Удалить
+                      </Button>
+                    </TableCell>
+                  </>
+                )}
               </TableRow>
             ))}
           </TableBody>

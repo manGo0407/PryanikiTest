@@ -6,6 +6,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Button,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -17,10 +18,27 @@ export default function HomePage() {
   const [apiData, setApiData] = useState<TableData[]>([]);
 
   const host = "https://test.v5.pryaniky.com";
+  const authToken = localStorage.getItem("token");
+
+  const deleteHandler = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `${host}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`, {
+          headers: {
+            "x-auth" : authToken
+          }
+        }
+      );
+      if (response.status === 200) {
+        setApiData((prev) => prev.filter((el) => el.id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getData = async () => {
     try {
-      const authToken = localStorage.getItem("token");
       console.log("eto authToken v localStorage ===> ", authToken);
       const response = await axios.get(
         `${host}/ru/data/v3/testmethods/docs/userdocs/get`,
@@ -76,6 +94,11 @@ export default function HomePage() {
                 <TableCell>{row.employeeNumber}</TableCell>
                 <TableCell>{row.employeeSigDate}</TableCell>
                 <TableCell>{row.employeeSignatureName}</TableCell>
+                <TableCell>
+                  <Button onClick={() => deleteHandler(row.id)}>
+                    Удалить!
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

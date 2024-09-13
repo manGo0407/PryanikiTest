@@ -43,7 +43,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn({ isAuth, setIsAuth }) {
+export default function SignIn() {
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordError, setPasswordError] = useState(false);
@@ -99,9 +99,8 @@ export default function SignIn({ isAuth, setIsAuth }) {
 
       if (response.status === 200) {
         const token = response.data.data.token;
-        localStorage.setItem("token", token); // Сохраняем токен в localStorage
+        localStorage.setItem("token", token); 
         navigate('/home')
-        setIsAuth(true); // Устанавливаем состояние аутентификации
         console.log("Успешная авторизация:", token);
       } else {
         console.error("Ошибка авторизации:", response.data.error_text);

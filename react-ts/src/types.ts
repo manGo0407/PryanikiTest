@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface TableData {
     id: number;
     companySigDate: string;
@@ -12,4 +14,10 @@ export interface TableData {
 
   export interface CreateNewOrderProps {
     getData: () => void; 
+  }
+
+  export interface GuestRouteProps {
+    isAuthenticated: boolean;
+    redirectPath?: string;
+    children: ReactNode
   }

@@ -13,6 +13,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
+import Logo from "../../assets/svg/gingerbread.svg";
 
 interface Props {
   window?: () => Window;
@@ -25,16 +26,18 @@ export default function DrawerAppBar(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
+  const token = localStorage.getItem("token");
+
   const handleLogout = () => {
-    localStorage.clear()
-    navigate('/login')
-  }
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
@@ -68,29 +71,48 @@ export default function DrawerAppBar(props: Props) {
             edge="start"
             onClick={handleDrawerToggle}
             sx={{ mr: 2, display: { sm: "none" } }}
-          >
-          </IconButton>
+          ></IconButton>
           <Typography
             variant="h6"
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            MUI
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                my: 2,
+              }}
+            >
+              <img
+                src={Logo}
+                alt="Logo"
+                style={{ width: "50px", height: "50px" }}
+              />
+            </Box>
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navItems.map((item) => (
+            {navItems.map((item) =>
               item === "logout" ? (
-                <Button key={item} sx={{ color: "#fff" }} onClick={handleLogout}>
+                <Button
+                  key={item}
+                  sx={{ color: "#fff" }}
+                  onClick={handleLogout}
+                >
                   {item}
                 </Button>
-              ) : (
+              ) : item === "login" && token ? null : (
                 <Button key={item} sx={{ color: "#fff" }}>
-                  <Link to={`/${item}`}>
+                  <Link
+                    to={`/${item}`}
+                    style={{ color: "inherit", textDecoration: "none" }}
+                  >
                     {item}
                   </Link>
                 </Button>
               )
-            ))}
+            )}
           </Box>
         </Toolbar>
       </AppBar>
@@ -117,6 +139,7 @@ export default function DrawerAppBar(props: Props) {
       <Box component="main" sx={{ p: 3 }}>
         <Toolbar />
       </Box>
+      =
     </Box>
   );
 }

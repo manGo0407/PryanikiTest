@@ -1,26 +1,28 @@
-import { Route, Router, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import { useState } from "react";
 import HomePage from "./pages/HomePage/HomePage";
+import GuestRoute from "./middlewares/GuestRoute";
 
 function App() {
-  // const [isAuth, setIsAuth] = useState(false)
-
-  // console.log(isAuth);
+  const token = localStorage.getItem("token");
   return (
     <>
       <Navbar />
       <Routes>
         {/* {isAuth ? ( */}
+        <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<HomePage />} />
-        {/* ) : ( */}
         <Route
           path="/login"
-          element={<LoginPage isAuth={undefined} setIsAuth={undefined} />}
+          element={
+            <GuestRoute isAuthenticated={!!token}>
+              <LoginPage />
+            </GuestRoute>
+          }
         />
-        {/* )} */}
       </Routes>
     </>
   );

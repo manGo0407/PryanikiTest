@@ -43,7 +43,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn() {
+export default function LoginPage() {
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordError, setPasswordError] = useState(false);
@@ -73,9 +73,11 @@ export default function SignIn() {
       setPasswordError(true);
       setPasswordErrorMessage("Password must be at least 6 characters long.");
       isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
+    }
+    
+    if(!/password/.test(password.value)) {
+      setPasswordError(true)
+      setPasswordErrorMessage('Invalid password')
     }
 
     return isValid;

@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField, Button, Box, InputLabel, FormControl } from "@mui/material";
 import axios from "axios";
-import { CreateNewOrderProps } from "../../../types";
+import { CreateNewOrderProps } from "../../types";
 
 export default function CreateNewOrder({ getData }: CreateNewOrderProps) {
   const [formValues, setFormValues] = React.useState({

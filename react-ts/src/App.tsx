@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import { useState } from "react";
 import HomePage from "./pages/HomePage/HomePage";
 import GuestRoute from "./middlewares/GuestRoute";
 
@@ -12,7 +11,6 @@ function App() {
     <>
       <Navbar />
       <Routes>
-        {/* {isAuth ? ( */}
         <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<HomePage />} />
         <Route
